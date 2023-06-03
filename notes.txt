@@ -1,0 +1,9 @@
+Alpha Vantage - API Key: Z4LMVQ381JEKO7PJ
+
+TODOs:
+
+- Implement Login and Registration Logic using Firebase.
+    - Registration and Login should have OTP
+    - Didnt receive OTP, resend OTP.
+
+- Homepage

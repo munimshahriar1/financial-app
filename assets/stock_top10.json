@@ -1,0 +1,42 @@
+[
+    {
+        "Name": "Apple Inc.",
+        "Symbol": "AAPL"
+    },
+    {
+        "Name": "Microsoft Corporation",
+        "Symbol": "MSFT"
+    },
+    {
+        "Name": "Amazon.com, Inc.",
+        "Symbol": "AMZN"
+    },
+    {
+        "Name": "Alphabet Inc. (Google)",
+        "Symbol": "GOOGL"
+    },
+    {
+        "Name": "Facebook, Inc.",
+        "Symbol": "FB"
+    },
+    {
+        "Name": "Berkshire Hathaway Inc.",
+        "Symbol": "BRK.A "
+    },
+    {
+        "Name": "Alibaba Group Holding Limited",
+        "Symbol": "BABA"
+    },
+    {
+        "Name": "Johnson & Johnson",
+        "Symbol": "JNJ"
+    },
+    {
+        "Name": "JPMorgan Chase & Co.",
+        "Symbol": "JPM"
+    },
+    {
+        "Name": "Exxon Mobil Corporation",
+        "Symbol": "XOM"
+    }
+]

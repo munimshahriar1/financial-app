@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
 class FinancialInstrumentCard extends StatelessWidget {
-  final String logoUrl;
   final String instrumentName;
   final double price;
   final double percentageChange;
   final double priceChange;
   final String priceChangeSign;
 
-  const FinancialInstrumentCard(
-      {required this.logoUrl,
-      required this.instrumentName,
-      required this.price,
-      required this.percentageChange,
-      required this.priceChange,
-      required this.priceChangeSign});
+  const FinancialInstrumentCard({
+    required this.instrumentName,
+    required this.price,
+    required this.percentageChange,
+    required this.priceChange,
+    required this.priceChangeSign,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,40 +32,22 @@ class FinancialInstrumentCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 30,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(1),
-                  image: DecorationImage(
-                    image: NetworkImage(logoUrl),
-                    fit: BoxFit.cover,
-                  ),
+              Text(
+                instrumentName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    instrumentName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '\$${price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 8),
+              Text(
+                '\$${price.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
               Row(
@@ -103,7 +84,6 @@ class FinancialInstrumentCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // const SizedBox(width: 4),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                         9, 4, 1, 1),

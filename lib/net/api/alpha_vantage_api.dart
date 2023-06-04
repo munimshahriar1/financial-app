@@ -10,10 +10,25 @@ class ApiClient {
     required this.apiKey,
   });
 
-  Future<Map<String, dynamic>> fetchData(
+  Future<Map<String, dynamic>> fetchInstrumentData(
+      String symbol, String apiFunction) async {
+    final url = Uri.parse(
+        '$baseUrl?function=$apiFunction&symbol=$symbol&apikey=$apiKey');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data;
+    } else {
+      throw Exception(
+          'API call failed with status code: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchNewsData(
       String symbol) async {
     final url = Uri.parse(
-        '$baseUrl?function=TIME_SERIES_MONTHLY&symbol=$symbol&apikey=$apiKey');
+        '$baseUrl?function=NEWS_SENTIMENT&tickers=$symbol&apikey=$apiKey');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

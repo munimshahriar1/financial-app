@@ -23,18 +23,24 @@ class _DashboardState extends State<Dashboard> {
       TextEditingController();
 
   List<Map<String, dynamic>> financialInstruments = [];
+  bool isLoading = true; // Track the loading state
 
   @override
   void initState() {
     super.initState();
     loadSP500Data().then((_) {
-      fetchDataForInstruments();
+      fetchDataForInstruments().then((_) {
+        setState(() {
+          isLoading =
+              false; // Update loading state when data is fetched
+        });
+      });
     });
   }
 
   Future<void> loadSP500Data() async {
     String jsonString = await DefaultAssetBundle.of(context)
-        .loadString('assets/s&p500.json');
+        .loadString('assets/stock_top10.json');
     List<dynamic> sp500Data = json.decode(jsonString);
 
     // Get the top 5 items from the JSON list
@@ -49,30 +55,31 @@ class _DashboardState extends State<Dashboard> {
   Future<void> fetchDataForInstruments() async {
     for (final instrument in financialInstruments) {
       final instrumentApiData =
-          await apiClient.fetchData(instrument['Symbol']);
+          await apiClient.fetchInstrumentData(
+              instrument['Symbol'],
+              'TIME_SERIES_DAILY_ADJUSTED');
       processInstrumentData(instrumentApiData, instrument);
     }
-    print(financialInstruments);
+    // print(financialInstruments);
   }
 
   void processInstrumentData(
     Map<String, dynamic> instrumentData,
     Map<String, dynamic> instrument,
   ) {
-    final monthlyTimeSeries =
-        instrumentData['Monthly Time Series'];
+    final dailyTimeSeries =
+        instrumentData['Time Series (Daily)'];
 
-    final latestDate = monthlyTimeSeries?.keys.first;
-    final previousDate =
-        monthlyTimeSeries?.keys.elementAt(1);
+    final latestDate = dailyTimeSeries?.keys.first;
+    final previousDate = dailyTimeSeries?.keys.elementAt(1);
 
     final latestClosingPrice = double.parse(
-      monthlyTimeSeries?[latestDate ?? '']?['4. close'] ??
+      dailyTimeSeries?[latestDate ?? '']?['4. close'] ??
           '0.0',
     );
 
     final previousClosingPrice = double.parse(
-      monthlyTimeSeries?[previousDate ?? '']?['4. close'] ??
+      dailyTimeSeries?[previousDate ?? '']?['4. close'] ??
           '0.0',
     );
 
@@ -93,12 +100,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _navigateToDetailsPage(
-      String instrumentName,
-      String symbol,
-      double price,
-      double percentageChange,
-      double priceChange,
-      String priceChangeSign) {
+    String instrumentName,
+    String symbol,
+    double price,
+    double percentageChange,
+    double priceChange,
+    String priceChangeSign,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -116,178 +124,188 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Row(
+    return isLoading // Check the loading state
+        ? const Center(
+            child: CircularProgressIndicator(
+                color:
+                    Colors.black), // Show loading indicator
+          )
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(10),
+            child: Column(
               children: [
-                const Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    setState(() {
-                      showSearchBar = !showSearchBar;
-                    });
-                  },
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Visibility(
-            visible: showSearchBar,
-            child: SearchBar(
-              hintText: 'Search interests to follow',
-              onClose: () {
-                setState(() {
-                  searchController.clear();
-                });
-              },
-              textController: searchController,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Gainers and Losers',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    // Handle "See All" button tap
-                  },
-                  label: Row(
-                    children: const [
-                      Text(
-                        'See All',
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      10, 10, 10, 0),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Dashboard',
                         style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontSize: 16,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.arrow_forward,
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          setState(() {
+                            showSearchBar = !showSearchBar;
+                          });
+                        },
                         color: Colors.white,
                       ),
                     ],
                   ),
-                  icon: const SizedBox.shrink(),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 185,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children:
-                  financialInstruments.map((instrument) {
-                final double price =
-                    instrument['price'] ?? 0.0;
-                final double percentageChange =
-                    instrument['percentageChange'] ?? 0.0;
-                final double priceChange =
-                    instrument['priceChange'] ?? 0.0;
-                final String priceChangeSign =
-                    instrument['priceChangeSign'] ?? '+';
-
-                return Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _navigateToDetailsPage(
-                          instrument['Name'],
-                          instrument['Symbol'],
-                          instrument['price'],
-                          instrument['percentageChange'],
-                          instrument['priceChange'],
-                          instrument['priceChangeSign'],
-                        );
-                      },
-                      child: FinancialInstrumentCard(
-                        logoUrl:
-                            'https://static.vecteezy.com/system/resources/previews/002/520/838/original/apple-logo-black-isolated-on-transparent-background-free-vector.jpg',
-                        instrumentName:
-                            instrument['Symbol'],
-                        price: price,
-                        percentageChange: percentageChange,
-                        priceChange: priceChange,
-                        priceChangeSign: priceChangeSign,
-                      ),
-                    ));
-              }).toList(),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Your Watchlist',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                const SizedBox(height: 20),
+                Visibility(
+                  visible: showSearchBar,
+                  child: SearchBar(
+                    hintText: 'Search interests to follow',
+                    onClose: () {
+                      setState(() {
+                        searchController.clear();
+                      });
+                    },
+                    textController: searchController,
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: () {
-                    // Handle "See All" button tap
-                  },
-                  label: Row(
-                    children: const [
-                      Text(
-                        'See All',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Gainers and Losers',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
+                      TextButton.icon(
+                        onPressed: () {
+                          // Handle "See All" button tap
+                        },
+                        label: Row(
+                          children: const [
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                        icon: const SizedBox.shrink(),
                       ),
                     ],
                   ),
-                  icon: const SizedBox.shrink(),
                 ),
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: financialInstruments
+                        .map((instrument) {
+                      final double price =
+                          instrument['price'] ?? 0.0;
+                      final double percentageChange =
+                          instrument['percentageChange'] ??
+                              0.0;
+                      final double priceChange =
+                          instrument['priceChange'] ?? 0.0;
+                      final String priceChangeSign =
+                          instrument['priceChangeSign'] ??
+                              '+';
+
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            _navigateToDetailsPage(
+                              instrument['Name'],
+                              instrument['Symbol'],
+                              instrument['price'],
+                              instrument[
+                                  'percentageChange'],
+                              instrument['priceChange'],
+                              instrument['priceChangeSign'],
+                            );
+                          },
+                          child: FinancialInstrumentCard(
+                            instrumentName:
+                                instrument['Symbol'],
+                            price: price,
+                            percentageChange:
+                                percentageChange,
+                            priceChange: priceChange,
+                            priceChangeSign:
+                                priceChangeSign,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Your Watchlist',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          // Handle "See All" button tap
+                        },
+                        label: Row(
+                          children: const [
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                        icon: const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Add your watchlist content here
               ],
             ),
-          ),
-
-          // Add your watchlist content here
-        ],
-      ),
-    );
+          );
   }
 }

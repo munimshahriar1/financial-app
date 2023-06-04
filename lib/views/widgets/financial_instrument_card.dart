@@ -6,14 +6,15 @@ class FinancialInstrumentCard extends StatelessWidget {
   final double price;
   final double percentageChange;
   final double priceChange;
+  final String priceChangeSign;
 
-  const FinancialInstrumentCard({
-    required this.logoUrl,
-    required this.instrumentName,
-    required this.price,
-    required this.percentageChange,
-    required this.priceChange,
-  });
+  const FinancialInstrumentCard(
+      {required this.logoUrl,
+      required this.instrumentName,
+      required this.price,
+      required this.percentageChange,
+      required this.priceChange,
+      required this.priceChangeSign});
 
   @override
   Widget build(BuildContext context) {
@@ -104,10 +105,10 @@ class FinancialInstrumentCard extends StatelessWidget {
                   ),
                   // const SizedBox(width: 4),
                   Padding(
-                    padding:
-                        EdgeInsets.fromLTRB(9, 4, 1, 1),
+                    padding: const EdgeInsets.fromLTRB(
+                        9, 4, 1, 1),
                     child: Text(
-                      '\$${priceChange.toStringAsFixed(2)}',
+                      '${priceChangeSign}${priceChange.toStringAsFixed(2)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

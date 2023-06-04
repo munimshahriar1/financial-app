@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../widgets/financial_instrument_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../../net/api/alpha_vantage_api.dart';
+import '../homepage/financial_instrument_view.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -55,8 +56,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void processInstrumentData(
-      Map<String, dynamic> instrumentData,
-      Map<String, dynamic> instrument) {
+    Map<String, dynamic> instrumentData,
+    Map<String, dynamic> instrument,
+  ) {
     final monthlyTimeSeries =
         instrumentData['Monthly Time Series'];
 
@@ -65,13 +67,14 @@ class _DashboardState extends State<Dashboard> {
         monthlyTimeSeries?.keys.elementAt(1);
 
     final latestClosingPrice = double.parse(
-        monthlyTimeSeries?[latestDate ?? '']?['4. close'] ??
-            '0.0');
+      monthlyTimeSeries?[latestDate ?? '']?['4. close'] ??
+          '0.0',
+    );
 
     final previousClosingPrice = double.parse(
-        monthlyTimeSeries?[previousDate ?? '']
-                ?['4. close'] ??
-            '0.0');
+      monthlyTimeSeries?[previousDate ?? '']?['4. close'] ??
+          '0.0',
+    );
 
     final priceChange =
         latestClosingPrice - previousClosingPrice;
@@ -84,7 +87,31 @@ class _DashboardState extends State<Dashboard> {
       instrument['price'] = latestClosingPrice;
       instrument['percentageChange'] = percentageChange;
       instrument['priceChange'] = priceChange;
+      instrument['priceChangeSign'] =
+          priceChange >= 0 ? '+' : '-'; // Add this line
     });
+  }
+
+  void _navigateToDetailsPage(
+      String instrumentName,
+      String symbol,
+      double price,
+      double percentageChange,
+      double priceChange,
+      String priceChangeSign) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FinancialInstrument(
+          instrumentName: instrumentName,
+          symbol: symbol,
+          price: price,
+          percentageChange: percentageChange,
+          priceChange: priceChange,
+          priceChangeSign: priceChangeSign,
+        ),
+      ),
+    );
   }
 
   @override
@@ -174,7 +201,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           SizedBox(
-            height: 190,
+            height: 185,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children:
@@ -185,23 +212,38 @@ class _DashboardState extends State<Dashboard> {
                     instrument['percentageChange'] ?? 0.0;
                 final double priceChange =
                     instrument['priceChange'] ?? 0.0;
+                final String priceChangeSign =
+                    instrument['priceChangeSign'] ?? '+';
 
                 return Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FinancialInstrumentCard(
-                    logoUrl:
-                        'https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo-768x432.png',
-                    instrumentName: instrument['Symbol'],
-                    price: price,
-                    percentageChange: percentageChange,
-                    priceChange: priceChange,
-                  ),
-                );
+                    padding: const EdgeInsets.all(5.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _navigateToDetailsPage(
+                          instrument['Name'],
+                          instrument['Symbol'],
+                          instrument['price'],
+                          instrument['percentageChange'],
+                          instrument['priceChange'],
+                          instrument['priceChangeSign'],
+                        );
+                      },
+                      child: FinancialInstrumentCard(
+                        logoUrl:
+                            'https://static.vecteezy.com/system/resources/previews/002/520/838/original/apple-logo-black-isolated-on-transparent-background-free-vector.jpg',
+                        instrumentName:
+                            instrument['Symbol'],
+                        price: price,
+                        percentageChange: percentageChange,
+                        priceChange: priceChange,
+                        priceChangeSign: priceChangeSign,
+                      ),
+                    ));
               }).toList(),
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 10),

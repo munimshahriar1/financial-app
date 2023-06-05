@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import './login_view.dart';
-import './register_view.dart';
 import '../homepage/homepage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -44,68 +43,24 @@ class _LoginPageState extends State<LoginPage> {
             onTap: () {
               _showLoginModal(context);
             },
-            child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                      "assets/login_background.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () {
-                _showRegisterModal(context);
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkResponse(
-                    onTap: () {
-                      _showRegisterModal(context);
-                    },
-                    splashColor:
-                        Colors.white.withOpacity(0.5),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
-                      child: Text(
-                        "Register",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+            child: Opacity(
+              opacity: 0.95,
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                        "assets/login_background.png"),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
             ),
           ),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                _showLoginModal(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
+          const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 250, 0, 0),
+              child: Text(
                 "Pulse9 Digital Financing",
                 style: TextStyle(
                   color: Colors.white,
@@ -123,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
   void _showLoginModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isDismissible: false,
       isScrollControlled: true,
       backgroundColor: Colors.black87,
       shape: const RoundedRectangleBorder(
@@ -138,32 +94,6 @@ class _LoginPageState extends State<LoginPage> {
           onLoginPressed: _handleLoginButtonPressed,
           onForgotPasswordPressed:
               _handleForgotPasswordButtonPressed,
-        );
-      },
-    );
-  }
-
-  void _showRegisterModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.black87,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return RegisterModal(
-          usernameController: _usernameController,
-          phoneNumberController: TextEditingController(),
-          passwordController: _passwordController,
-          confirmPasswordController:
-              TextEditingController(),
-          onRegisterPressed: () {
-            // TODO: Implement register logic
-          },
         );
       },
     );

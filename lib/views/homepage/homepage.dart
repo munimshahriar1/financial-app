@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.94,
+            opacity: 0.96,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

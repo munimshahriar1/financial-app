@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:s8_finapp/views/auth/register_view.dart';
+import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 
 class LoginModal extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController passwordController;
   final VoidCallback onLoginPressed;
   final VoidCallback onForgotPasswordPressed;
+
+  void _showRegisterModal(BuildContext context) {
+    Navigator.of(context).pop(); // Close the LoginModal
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black87,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return RegisterModal(
+          usernameController: usernameController,
+          phoneNumberController: TextEditingController(),
+          passwordController: passwordController,
+          confirmPasswordController:
+              TextEditingController(),
+          onRegisterPressed: () {
+            // TODO: Implement register logic
+          },
+        );
+      },
+    );
+  }
 
   const LoginModal({
     Key? key,
@@ -33,30 +63,55 @@ class LoginModal extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(
-                  height: 20), // Adjust the height here
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Align(
                   alignment: Alignment.topLeft,
-                  child: Text(
-                    isMorning
-                        ? "Good Morning"
-                        : "Good Evening",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isMorning
+                            ? "Good Morning"
+                            : "Good Evening",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Text(
+                            "Don't have an account? ",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                _showRegisterModal(context),
+                            child: Text(
+                              "Register",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight:
+                                    FontWeight.normal,
+                                decoration: TextDecoration
+                                    .underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              const Text(
-                "Login",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 20),
@@ -99,24 +154,12 @@ class LoginModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: onLoginPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black87,
-                  minimumSize:
-                      const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: ExpandedButton(
+                    onPressed: onLoginPressed,
+                    buttonText: "Login",
+                    isDarkTheme: false),
               ),
               const SizedBox(height: 10),
               TextButton(

@@ -57,35 +57,32 @@ class _StockChartState extends State<StockChart> {
               return Padding(
                 padding:
                     const EdgeInsets.fromLTRB(4, 0, 0, 12),
-                child: Expanded(
-                  child: Container(
-                    width:
-                        46, // Set a specific width for the buttons
-                    child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedInterval = interval;
-                        });
-                        widget.onIntervalSelected(interval);
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: isSelected
-                            ? MaterialStateProperty.all<
-                                Color>(Colors.white)
-                            : null,
-                        foregroundColor: isSelected
-                            ? MaterialStateProperty.all<
-                                Color>(Colors.black)
-                            : MaterialStateProperty.all<
-                                Color>(Colors.white),
-                      ),
-                      child: Text(
-                        interval,
-                        style: const TextStyle(
-                          fontSize:
-                              14, // Decrease font size
-                          fontWeight: FontWeight.bold,
-                        ),
+                child: Container(
+                  width:
+                      46, // Set a specific width for the buttons
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedInterval = interval;
+                      });
+                      widget.onIntervalSelected(interval);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: isSelected
+                          ? MaterialStateProperty.all<
+                              Color>(Colors.white)
+                          : null,
+                      foregroundColor: isSelected
+                          ? MaterialStateProperty.all<
+                              Color>(Colors.black)
+                          : MaterialStateProperty.all<
+                              Color>(Colors.white),
+                    ),
+                    child: Text(
+                      interval,
+                      style: const TextStyle(
+                        fontSize: 14, // Decrease font size
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

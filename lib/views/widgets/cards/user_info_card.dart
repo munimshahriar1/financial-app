@@ -6,6 +6,7 @@ class UserInfoCard extends StatelessWidget {
   final String password;
 
   const UserInfoCard({
+    super.key,
     required this.username,
     required this.phoneNumber,
     required this.password,

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 import '../../net/api/alpha_vantage_api.dart';
-import '../widgets/stock_chart.dart';
+import '../widgets/charts/stock_chart.dart';
 import '../widgets/cards/news_card.dart';
 
 class FinancialInstrument extends StatefulWidget {

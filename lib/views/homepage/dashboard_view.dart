@@ -209,10 +209,13 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           isLoading // Check the loading state
-              ? const Center(
-                  child: CircularProgressIndicator(
-                      color: Colors
-                          .white), // Show loading indicator
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                        color: Colors
+                            .white), // Show loading indicator
+                  ),
                 )
               : SizedBox(
                   height: 150,

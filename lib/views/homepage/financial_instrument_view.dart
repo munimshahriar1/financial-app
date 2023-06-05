@@ -32,8 +32,7 @@ class FinancialInstrument extends StatefulWidget {
 class _FinancialInstrumentState
     extends State<FinancialInstrument> {
   final apiClient = ApiClient(
-    baseUrl: 'https://www.alphavantage.co/query',
-    apiKey: 'Z4LMVQ381JEKO7PJ',
+    apiKey: 'AO48IFCXLA3BX1O9',
   );
 
   Map<String, dynamic>? instrumentData;

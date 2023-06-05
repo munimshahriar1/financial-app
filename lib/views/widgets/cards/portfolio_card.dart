@@ -81,7 +81,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
   void initState() {
     super.initState();
     // TODO: This will become dynamic
-    fetchDataForInstrument('AAPL');
+    fetchDataForInstrument(widget.symbol);
   }
 
   @override
@@ -134,7 +134,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
                         color: widget.percentageChange >= 0
                             ? Colors.green
                             : Colors.red,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -146,7 +146,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 2),
                 child: Container(
-                  width: 120,
+                  width: 110,
                   child: Column(
                     children: [
                       StockChartSmall(stockDataList),

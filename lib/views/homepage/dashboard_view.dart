@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:s8_finapp/views/widgets/cards/portfolio_card.dart';
+import 'package:s8_finapp/views/widgets/circular_loading_widget.dart';
 import 'dart:convert';
 import '../widgets/cards/financial_instrument_card.dart';
 import '../widgets/search_bar_widget.dart';
@@ -14,8 +16,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final apiClient = ApiClient(
-    baseUrl: 'https://www.alphavantage.co/query',
-    apiKey: 'Z4LMVQ381JEKO7PJ',
+    apiKey: 'IHVC73WBA2XTINXS',
   );
 
   bool showSearchBar = true;
@@ -209,14 +210,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           isLoading // Check the loading state
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                        color: Colors
-                            .white), // Show loading indicator
-                  ),
-                )
+              ? const CircularLoading()
               : SizedBox(
                   height: 150,
                   child: ListView(
@@ -306,7 +300,46 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
 
-          // Add your watchlist content here
+          isLoading
+              ? const CircularLoading()
+              : SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: financialInstruments
+                        .map((instrument) {
+                      final double price =
+                          instrument['price'] ?? 0.0;
+                      final double percentageChange =
+                          instrument['percentageChange'] ??
+                              0.0;
+                      return Padding(
+                          padding: const EdgeInsets.all(10),
+                          // child: Column(
+                          child: GestureDetector(
+                            onTap: () {
+                              _navigateToDetailsPage(
+                                instrument['Name'],
+                                instrument['Symbol'],
+                                instrument['price'],
+                                instrument[
+                                    'percentageChange'],
+                                instrument['priceChange'],
+                                instrument[
+                                    'priceChangeSign'],
+                              );
+                            },
+                            child: PortfolioCard(
+                              symbol: instrument['Symbol'],
+                              percentageChange:
+                                  percentageChange,
+                              closingPrice: price,
+                            ),
+
+                            // ),
+                          ));
+                    }).toList(),
+                  ),
+                ),
         ],
       ),
     );

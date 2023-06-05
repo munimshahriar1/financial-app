@@ -6,7 +6,7 @@ class ApiClient {
   final String apiKey;
 
   ApiClient({
-    required this.baseUrl,
+    this.baseUrl = "https://www.alphavantage.co/query",
     required this.apiKey,
   });
 
@@ -18,6 +18,14 @@ class ApiClient {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      // If API limit crossed print it out
+      if (data.containsKey('Note') &&
+          data['Note'] ==
+              "Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.") {
+        print("API limit crossed");
+
+        // Handle API limit crossed case
+      }
       return data;
     } else {
       throw Exception(

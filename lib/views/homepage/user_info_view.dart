@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:s8_finapp/views/widgets/expanded_button.dart';
-import 'package:s8_finapp/views/widgets/user_info_card.dart';
-import '../auth/authentication.dart';
+import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
+import 'package:s8_finapp/views/widgets/cards/user_info_card.dart';
 
 class UserInfo extends StatelessWidget {
-  const UserInfo({Key? key}) : super(key: key);
+  final BuildContext context;
+  const UserInfo({Key? key, required this.context})
+      : super(key: key);
 
   void logOut() {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => LoginPage()),
-    // );
+    Navigator.pop(context);
   }
 
   @override
@@ -22,7 +19,7 @@ class UserInfo extends StatelessWidget {
         children: [
           Padding(
             padding:
-                const EdgeInsets.fromLTRB(14, 10, 10, 0),
+                const EdgeInsets.fromLTRB(14, 14, 10, 0),
             child: Row(
               children: const [
                 Text(
@@ -45,7 +42,7 @@ class UserInfo extends StatelessWidget {
                 UserInfoCard(
                   username: 'JohnDoe',
                   phoneNumber: '123-456-7890',
-                  password: 'secretpassword',
+                  password: '**************',
                 ),
                 SizedBox(height: 10),
                 ExpandedButton(

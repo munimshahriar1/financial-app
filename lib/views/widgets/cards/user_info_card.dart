@@ -31,7 +31,7 @@ class UserInfoCard extends StatelessWidget {
                   'Username:  ',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -39,7 +39,7 @@ class UserInfoCard extends StatelessWidget {
                   username,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 15,
                   ),
                 ),
               ]),
@@ -49,7 +49,7 @@ class UserInfoCard extends StatelessWidget {
                   'Phone Number:  ',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -57,7 +57,7 @@ class UserInfoCard extends StatelessWidget {
                   phoneNumber,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 15,
                   ),
                 ),
               ]),
@@ -67,7 +67,7 @@ class UserInfoCard extends StatelessWidget {
                   'Password:  ',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -75,7 +75,7 @@ class UserInfoCard extends StatelessWidget {
                   password,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 15,
                   ),
                 ),
               ]),

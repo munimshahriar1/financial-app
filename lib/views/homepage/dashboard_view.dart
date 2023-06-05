@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import '../widgets/financial_instrument_card.dart';
+import '../widgets/cards/financial_instrument_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../../net/api/alpha_vantage_api.dart';
 import '../homepage/financial_instrument_view.dart';
@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
 
     // Get the top 5 items from the JSON list
     List<Map<String, dynamic>> top5Data = sp500Data
-        .sublist(0, 5)
+        .sublist(0, 3)
         .map((item) => Map<String, dynamic>.from(item))
         .toList();
 
@@ -124,97 +124,97 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading // Check the loading state
-        ? const Center(
-            child: CircularProgressIndicator(
-                color:
-                    Colors.black), // Show loading indicator
-          )
-        : SingleChildScrollView(
-            padding: const EdgeInsets.all(10),
-            child: Column(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      10, 10, 10, 0),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Dashboard',
+                const Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      showSearchBar = !showSearchBar;
+                    });
+                  },
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Visibility(
+            visible: showSearchBar,
+            child: SearchBar(
+              hintText: 'Search interests to follow',
+              onClose: () {
+                setState(() {
+                  searchController.clear();
+                });
+              },
+              textController: searchController,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Gainers and Losers',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    // Handle "See All" button tap
+                  },
+                  label: Row(
+                    children: const [
+                      Text(
+                        'See All',
                         style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontSize: 16,
                         ),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          setState(() {
-                            showSearchBar = !showSearchBar;
-                          });
-                        },
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.arrow_forward,
                         color: Colors.white,
                       ),
                     ],
                   ),
+                  icon: const SizedBox.shrink(),
                 ),
-                const SizedBox(height: 20),
-                Visibility(
-                  visible: showSearchBar,
-                  child: SearchBar(
-                    hintText: 'Search interests to follow',
-                    onClose: () {
-                      setState(() {
-                        searchController.clear();
-                      });
-                    },
-                    textController: searchController,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Gainers and Losers',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          // Handle "See All" button tap
-                        },
-                        label: Row(
-                          children: const [
-                            Text(
-                              'See All',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        icon: const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
+              ],
+            ),
+          ),
+          isLoading // Check the loading state
+              ? const Center(
+                  child: CircularProgressIndicator(
+                      color: Colors
+                          .white), // Show loading indicator
+                )
+              : SizedBox(
                   height: 150,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
@@ -261,51 +261,51 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Your Watchlist',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+          // const SizedBox(height: 10),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Your Watchlist',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    // Handle "See All" button tap
+                  },
+                  label: Row(
+                    children: const [
+                      Text(
+                        'See All',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
                         ),
                       ),
-                      TextButton.icon(
-                        onPressed: () {
-                          // Handle "See All" button tap
-                        },
-                        label: Row(
-                          children: const [
-                            Text(
-                              'See All',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        icon: const SizedBox.shrink(),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.white,
                       ),
                     ],
                   ),
+                  icon: const SizedBox.shrink(),
                 ),
-
-                // Add your watchlist content here
               ],
             ),
-          );
+          ),
+
+          // Add your watchlist content here
+        ],
+      ),
+    );
   }
 }

@@ -60,10 +60,12 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: const [
+                  children: [
                     Dashboard(), // Dashboard Tab Content
                     Portfolio(), // Portfolio Tab Content
-                    UserInfo(), // User Info Tab Content
+                    UserInfo(
+                        context:
+                            context), // User Info Tab Content
                   ],
                 ),
               ),

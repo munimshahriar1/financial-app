@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/news_card.dart';
+import '../widgets/cards/news_card.dart';
 
 class NewsData {
   final String summary;

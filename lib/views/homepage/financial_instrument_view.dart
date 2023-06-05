@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:s8_finapp/views/widgets/expanded_button.dart';
 import '../../net/api/alpha_vantage_api.dart';
 import '../widgets/stock_chart.dart';
 import '../widgets/news_card.dart';
@@ -361,31 +362,14 @@ class _FinancialInstrumentState
 
                 const SizedBox(height: 20),
                 // Follow Button
-                ElevatedButton(
+                ExpandedButton(
                   onPressed: () {
                     // TODO
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors
-                        .white, // Light theme background color
-                    foregroundColor: Colors
-                        .black, // Light theme foreground color
-                    minimumSize:
-                        const Size(double.infinity, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(15),
-                    ),
-                  ),
-                  child: const Text(
-                    'Follow',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  buttonText: 'Follow',
+                  isDarkTheme: false,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -399,7 +383,7 @@ class _FinancialInstrumentState
                       crossAxisAlignment:
                           CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Latest News',
                           style: TextStyle(
                             fontSize: 20,
@@ -407,7 +391,7 @@ class _FinancialInstrumentState
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Expanded(
                           child: ListView.builder(
                             itemCount: newsDataList.length,

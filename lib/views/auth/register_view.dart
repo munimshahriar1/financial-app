@@ -1,49 +1,43 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:s8_finapp/views/auth/login_view.dart';
+import 'package:s8_finapp/auth/auth.dart';
+
 import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 
-class RegisterModal extends StatelessWidget {
+class RegisterModal extends StatefulWidget {
   final TextEditingController usernameController;
   final TextEditingController phoneNumberController;
   final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
-  final VoidCallback onRegisterPressed;
+  final VoidCallback openLoginModal;
 
-  void _showLoginModal(BuildContext context) {
-    Navigator.of(context).pop(); // Close the RegisterModal
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.black87,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return LoginModal(
-          usernameController: usernameController,
-          passwordController: passwordController,
-          onLoginPressed: () {
-            // TODO: Implement login logic
-          },
-          onForgotPasswordPressed: () {
-            // TODO: Implement forgot password logic
-          },
-        );
-      },
-    );
+  const RegisterModal(
+      {Key? key,
+      required this.usernameController,
+      required this.phoneNumberController,
+      required this.passwordController,
+      required this.openLoginModal})
+      : super(key: key);
+
+  @override
+  _RegisterModalState createState() =>
+      _RegisterModalState();
+}
+
+class _RegisterModalState extends State<RegisterModal> {
+  String? errorMessage = '';
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(
+        email: widget.usernameController.text,
+        password: widget.passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
   }
-
-  const RegisterModal({
-    Key? key,
-    required this.usernameController,
-    required this.phoneNumberController,
-    required this.passwordController,
-    required this.confirmPasswordController,
-    required this.onRegisterPressed,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +77,7 @@ class RegisterModal extends StatelessWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () =>
-                            _showLoginModal(context),
+                        onPressed: widget.openLoginModal,
                         child: const Text(
                           "Login",
                           style: TextStyle(
@@ -107,7 +100,7 @@ class RegisterModal extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              controller: usernameController,
+              controller: widget.usernameController,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 hintText: "Username",
@@ -124,7 +117,7 @@ class RegisterModal extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              controller: phoneNumberController,
+              controller: widget.phoneNumberController,
               style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
@@ -142,7 +135,7 @@ class RegisterModal extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              controller: passwordController,
+              controller: widget.passwordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
@@ -160,7 +153,7 @@ class RegisterModal extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              controller: confirmPasswordController,
+              controller: TextEditingController(),
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
@@ -182,7 +175,7 @@ class RegisterModal extends StatelessWidget {
                 Expanded(
                   child: Text(
                     _getPasswordStrengthText(
-                        passwordController.text),
+                        widget.passwordController.text),
                     style: const TextStyle(
                         color: Colors.white),
                   ),
@@ -190,16 +183,14 @@ class RegisterModal extends StatelessWidget {
               ],
             ),
           ),
-          // const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.all(14.0),
             child: ExpandedButton(
-              onPressed: onRegisterPressed,
+              onPressed: createUserWithEmailAndPassword,
               buttonText: "Register",
               isDarkTheme: false,
             ),
           ),
-          const SizedBox(height: 50),
         ],
       ),
     );

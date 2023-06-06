@@ -1,14 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:s8_finapp/auth/auth.dart';
 import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 import 'package:s8_finapp/views/widgets/cards/user_info_card.dart';
 
 class UserInfo extends StatelessWidget {
   final BuildContext context;
-  const UserInfo({Key? key, required this.context})
+  UserInfo({Key? key, required this.context})
       : super(key: key);
 
-  void logOut() {
-    Navigator.pop(context);
+  final User? user = Auth().currentUser;
+  Future<void> signOut() async {
+    await Auth().signOut();
   }
 
   @override
@@ -40,13 +43,13 @@ class UserInfo extends StatelessWidget {
             child: Column(
               children: [
                 UserInfoCard(
-                  username: 'JohnDoe',
-                  phoneNumber: '123-456-7890',
+                  username: user?.email ?? '',
+                  phoneNumber: user?.phoneNumber ?? '',
                   password: '**************',
                 ),
                 SizedBox(height: 10),
                 ExpandedButton(
-                  onPressed: logOut,
+                  onPressed: signOut,
                   buttonText: "Log out",
                   isDarkTheme: true,
                 )

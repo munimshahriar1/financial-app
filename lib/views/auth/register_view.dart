@@ -27,14 +27,28 @@ class RegisterModal extends StatefulWidget {
 }
 
 class _RegisterModalState extends State<RegisterModal> {
-  String? errorMessage = '';
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   Future<void> createUserWithEmailAndPassword() async {
+    String? errorMessage = '';
     widget.updateIsRegisterLoading(true, errorMessage);
+
+    final String username =
+        widget.usernameController.text.trim();
+    final String password =
+        widget.passwordController.text.trim();
+    final String confirmPassword =
+        confirmPasswordController.text.trim();
+    if (password != confirmPassword) {
+      errorMessage = "Passwords do not match.";
+      widget.updateIsRegisterLoading(false, errorMessage);
+      return;
+    }
     try {
       await Auth().createUserWithEmailAndPassword(
-        email: widget.usernameController.text,
-        password: widget.passwordController.text,
+        email: username,
+        password: password,
       );
 
       widget.usernameController.clear();
@@ -46,8 +60,6 @@ class _RegisterModalState extends State<RegisterModal> {
         errorMessage = match.group(1) ??
             ''; // Assign the value to the class-level errorMessage
       }
-      widget.updateIsRegisterLoading(true, errorMessage);
-    } finally {
       widget.updateIsRegisterLoading(false, errorMessage);
     }
   }
@@ -116,25 +128,7 @@ class _RegisterModalState extends State<RegisterModal> {
               controller: widget.usernameController,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                hintText: "Username",
-                hintStyle: TextStyle(color: Colors.white54),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide:
-                      BorderSide(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20),
-            child: TextField(
-              controller: widget.phoneNumberController,
-              style: const TextStyle(color: Colors.white),
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                hintText: "Phone Number",
+                hintText: "Email Address",
                 hintStyle: TextStyle(color: Colors.white54),
                 focusedBorder: UnderlineInputBorder(
                   borderSide:
@@ -166,7 +160,7 @@ class _RegisterModalState extends State<RegisterModal> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20),
             child: TextField(
-              controller: TextEditingController(),
+              controller: confirmPasswordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
@@ -181,22 +175,6 @@ class _RegisterModalState extends State<RegisterModal> {
           ),
           const SizedBox(height: 10),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _getPasswordStrengthText(
-                        widget.passwordController.text),
-                    style: const TextStyle(
-                        color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
             padding: const EdgeInsets.all(14.0),
             child: ExpandedButton(
               onPressed: createUserWithEmailAndPassword,
@@ -207,13 +185,5 @@ class _RegisterModalState extends State<RegisterModal> {
         ],
       ),
     );
-  }
-
-  String _getPasswordStrengthText(String password) {
-    // Password strength logic here...
-    // Return appropriate strength text based on the password
-    // You can reuse the existing _getPasswordStrengthText() implementation from your code
-    // ...
-    return "";
   }
 }

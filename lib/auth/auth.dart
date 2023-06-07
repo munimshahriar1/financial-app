@@ -5,6 +5,8 @@ typedef VerificationIdCallback = Future Function(
 typedef VerificationFailedCallback = void Function(
     String error);
 
+typedef VerificationCompletedCallback = void Function();
+
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -26,10 +28,14 @@ class Auth {
         onVerificationIdReceived,
     required VerificationFailedCallback
         onVerificationFailed,
+    required VerificationCompletedCallback
+        onVerificationCompleted,
   }) async {
     await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
-        verificationCompleted: (_) {},
+        verificationCompleted: (e) {
+          onVerificationCompleted();
+        },
         verificationFailed: (e) {
           // Sending error message to parent
           onVerificationFailed(e.toString());

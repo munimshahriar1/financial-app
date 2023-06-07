@@ -38,9 +38,8 @@ class _LoginModalState extends State<LoginModal> {
     });
   }
 
-  String errorMessage = '';
-
   Future<void> signInWithEmailAndPassword() async {
+    String errorMessage = '';
     widget.updateIsLoginLoading(true, errorMessage);
 
     try {
@@ -56,14 +55,14 @@ class _LoginModalState extends State<LoginModal> {
       if (match != null) {
         errorMessage = match.group(1) ?? '';
       }
-      widget.updateIsLoginLoading(true, errorMessage);
     } finally {
       widget.updateIsLoginLoading(false, errorMessage);
     }
   }
 
   Future<void> signWithPhoneNumberAndOtp() async {
-    widget.updateIsLoginLoading(true, errorMessage);
+    // Start of signin ---> loading circle
+    widget.updateIsLoginLoading(true, '');
 
     try {
       final phoneNumber = selectedCountryCode +
@@ -71,34 +70,33 @@ class _LoginModalState extends State<LoginModal> {
       await Auth().signInPhoneNumberAndOtp(
         onVerificationIdReceived: (id) async {
           verificationId = id;
-          widget.updateIsLoginLoading(true, errorMessage);
-
-          // Documentation
-          // Receiving verificationId from child and sending the OTP in return
+          // Documentation: Receiving verificationId from child and sending the OTP in return
           if (verificationId != '') {
             setState(() {
               isOtpReceived = true;
             });
           }
-
+          widget.updateIsLoginLoading(true, '');
           final otpCode = widget.loginOtpController.text;
-          // final otpCode = "000000";
           return otpCode;
         },
         onVerificationFailed: (error) {
-          widget.updateIsLoginLoading(true, error);
+          widget.updateIsLoginLoading(false, error);
+          widget.loginPhonenumberController.clear();
+          widget.loginOtpController.clear();
         },
+        onVerificationCompleted: () {},
         phoneNumber: phoneNumber,
       );
     } catch (e) {
       final regex = RegExp(r'\]\s(.*)$');
       final match = regex.firstMatch(e.toString());
       if (match != null) {
-        errorMessage = match.group(1) ?? '';
+        final errorMessage = match.group(1) ?? '';
         widget.updateIsLoginLoading(true, errorMessage);
       }
     } finally {
-      widget.updateIsLoginLoading(false, errorMessage);
+      widget.updateIsLoginLoading(false, '');
     }
   }
 

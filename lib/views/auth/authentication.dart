@@ -29,7 +29,7 @@ class _AuthenticationPageState
   final _phoneNumberController = TextEditingController();
 
   bool isLogin = true;
-  double modalHeight = 410;
+  double modalHeight = 420;
   dynamic errorMessage;
 
   // Loader till the user successfully logs in
@@ -63,14 +63,14 @@ class _AuthenticationPageState
   void openRegisterModal() {
     setState(() {
       isLogin = false;
-      modalHeight = 490;
+      modalHeight = 440;
     });
   }
 
   void openLoginModal() {
     setState(() {
       isLogin = true;
-      modalHeight = 410;
+      modalHeight = 420;
     });
   }
 

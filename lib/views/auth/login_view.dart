@@ -5,6 +5,8 @@ import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 class LoginModal extends StatefulWidget {
   final TextEditingController loginIdController;
   final TextEditingController loginPasswordController;
+  final TextEditingController loginPhonenumberController;
+  final TextEditingController loginOtpController;
   final VoidCallback openRegisterModal;
   final Function(bool, dynamic) updateIsLoginLoading;
   bool isLoginLoading;
@@ -13,6 +15,8 @@ class LoginModal extends StatefulWidget {
     Key? key,
     required this.loginIdController,
     required this.loginPasswordController,
+    required this.loginPhonenumberController,
+    required this.loginOtpController,
     required this.openRegisterModal,
     required this.isLoginLoading,
     required this.updateIsLoginLoading,
@@ -23,12 +27,20 @@ class LoginModal extends StatefulWidget {
 }
 
 class _LoginModalState extends State<LoginModal> {
-  String errorMessage =
-      ''; // Declare the errorMessage variable here
+  String selectedCountryCode = "+852";
+  bool isEmailAuthentication = true;
+  String verificationId = '';
+  bool isOtpReceived = false;
+
+  void toggleAuthentication() {
+    setState(() {
+      isEmailAuthentication = !isEmailAuthentication;
+    });
+  }
+
+  String errorMessage = '';
 
   Future<void> signInWithEmailAndPassword() async {
-    // Login process start --> loading starts
-
     widget.updateIsLoginLoading(true, errorMessage);
 
     try {
@@ -39,14 +51,52 @@ class _LoginModalState extends State<LoginModal> {
       widget.loginIdController.clear();
       widget.loginPasswordController.clear();
     } catch (e) {
-      // Extract the error message from the exception string
       final regex = RegExp(r'\]\s(.*)$');
       final match = regex.firstMatch(e.toString());
       if (match != null) {
-        errorMessage = match.group(1) ??
-            ''; // Assign the value to the class-level errorMessage
+        errorMessage = match.group(1) ?? '';
       }
       widget.updateIsLoginLoading(true, errorMessage);
+    } finally {
+      widget.updateIsLoginLoading(false, errorMessage);
+    }
+  }
+
+  Future<void> signWithPhoneNumberAndOtp() async {
+    widget.updateIsLoginLoading(true, errorMessage);
+
+    try {
+      final phoneNumber = selectedCountryCode +
+          widget.loginPhonenumberController.text;
+      await Auth().signInPhoneNumberAndOtp(
+        onVerificationIdReceived: (id) async {
+          verificationId = id;
+          widget.updateIsLoginLoading(true, errorMessage);
+
+          // Documentation
+          // Receiving verificationId from child and sending the OTP in return
+          if (verificationId != '') {
+            setState(() {
+              isOtpReceived = true;
+            });
+          }
+
+          final otpCode = widget.loginOtpController.text;
+          // final otpCode = "000000";
+          return otpCode;
+        },
+        onVerificationFailed: (error) {
+          widget.updateIsLoginLoading(true, error);
+        },
+        phoneNumber: phoneNumber,
+      );
+    } catch (e) {
+      final regex = RegExp(r'\]\s(.*)$');
+      final match = regex.firstMatch(e.toString());
+      if (match != null) {
+        errorMessage = match.group(1) ?? '';
+        widget.updateIsLoginLoading(true, errorMessage);
+      }
     } finally {
       widget.updateIsLoginLoading(false, errorMessage);
     }
@@ -118,83 +168,215 @@ class _LoginModalState extends State<LoginModal> {
                           ),
                         ],
                       ),
-                      // Row(
-                      //   children: [
-                      //     Text(
-                      //       errorMessage,
-                      //       style: const TextStyle(
-                      //         color: Colors.red,
-                      //         fontSize: 14,
-                      //         fontWeight: FontWeight.normal,
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+                      Row(
+                        children: [
+                          const Text(
+                            "Login with",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: toggleAuthentication,
+                            child: Text(
+                              isEmailAuthentication
+                                  ? "Phonenumber"
+                                  : "Email",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight:
+                                    FontWeight.normal,
+                                decoration: TextDecoration
+                                    .underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20),
-                child: TextField(
-                  controller: widget.loginIdController,
-                  style:
-                      const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: "Username/Phone Number",
-                    hintStyle:
-                        TextStyle(color: Colors.white54),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.white),
+              isEmailAuthentication
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                  horizontal: 20),
+                          child: TextField(
+                            controller:
+                                widget.loginIdController,
+                            style: const TextStyle(
+                                color: Colors.white),
+                            decoration:
+                                const InputDecoration(
+                              hintText: "Username/ Email",
+                              hintStyle: TextStyle(
+                                  color: Colors.white54),
+                              focusedBorder:
+                                  UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                  horizontal: 20),
+                          child: TextField(
+                            controller: widget
+                                .loginPasswordController,
+                            obscureText: true,
+                            style: const TextStyle(
+                                color: Colors.white),
+                            decoration:
+                                const InputDecoration(
+                              hintText: "Password",
+                              hintStyle: TextStyle(
+                                  color: Colors.white54),
+                              focusedBorder:
+                                  UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding:
+                              const EdgeInsets.all(14.0),
+                          child: ExpandedButton(
+                            onPressed:
+                                signInWithEmailAndPassword,
+                            buttonText: "Login",
+                            isDarkTheme: false,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                  horizontal: 20),
+                          child: Row(
+                            children: [
+                              DropdownButton<String>(
+                                  value:
+                                      selectedCountryCode,
+                                  onChanged:
+                                      (String? newValue) {
+                                    setState(() {
+                                      selectedCountryCode =
+                                          newValue!;
+                                    });
+                                  },
+                                  items: <String>[
+                                    '+852',
+                                    '+1',
+                                    '+880',
+                                  ] // Replace with your list of country codes
+                                      .map<
+                                          DropdownMenuItem<
+                                              String>>(
+                                    (String value) {
+                                      return DropdownMenuItem<
+                                          String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: const TextStyle(
+                                              color: Colors
+                                                  .grey),
+                                        ),
+                                      );
+                                    },
+                                  ).toList()),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: widget
+                                      .loginPhonenumberController,
+                                  style: const TextStyle(
+                                      color: Colors.white),
+                                  decoration:
+                                      const InputDecoration(
+                                    hintText:
+                                        "Phone Number",
+                                    hintStyle: TextStyle(
+                                        color:
+                                            Colors.white54),
+                                    focusedBorder:
+                                        UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(
+                                              color: Colors
+                                                  .white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        if (isOtpReceived)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                    horizontal: 20),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.white),
+                                borderRadius:
+                                    BorderRadius.circular(
+                                        5),
+                              ),
+                              child: TextField(
+                                controller: widget
+                                    .loginOtpController,
+                                style: const TextStyle(
+                                    color: Colors.white),
+                                decoration:
+                                    const InputDecoration(
+                                  hintText:
+                                      "Enter 6 digit code",
+                                  hintStyle: TextStyle(
+                                      color:
+                                          Colors.white54),
+                                  border: InputBorder.none,
+                                  contentPadding:
+                                      EdgeInsets.all(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding:
+                              const EdgeInsets.all(14.0),
+                          child: ExpandedButton(
+                            onPressed:
+                                signWithPhoneNumberAndOtp,
+                            buttonText: !isOtpReceived
+                                ? "Send Code"
+                                : "Submit",
+                            isDarkTheme: false,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20),
-                child: TextField(
-                  controller:
-                      widget.loginPasswordController,
-                  obscureText: true,
-                  style:
-                      const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: "Password",
-                    hintStyle:
-                        TextStyle(color: Colors.white54),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: ExpandedButton(
-                  onPressed: signInWithEmailAndPassword,
-                  buttonText: "Login",
-                  isDarkTheme: false,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  "Forgot Password?",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
             ],
           ),
         ),

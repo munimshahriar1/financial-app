@@ -159,7 +159,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
                 '\$${widget.closingPrice}',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),

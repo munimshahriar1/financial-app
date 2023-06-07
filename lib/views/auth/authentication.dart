@@ -20,13 +20,16 @@ class _AuthenticationPageState
     extends State<AuthenticationPage> {
   final _loginIdController = TextEditingController();
   final _loginPasswordController = TextEditingController();
+  final _loginPhonenumberController =
+      TextEditingController();
+  final _loginOtpController = TextEditingController();
 
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneNumberController = TextEditingController();
 
   bool isLogin = true;
-  double modalHeight = 420;
+  double modalHeight = 410;
   dynamic errorMessage;
 
   // Loader till the user successfully logs in
@@ -67,7 +70,7 @@ class _AuthenticationPageState
   void openLoginModal() {
     setState(() {
       isLogin = true;
-      modalHeight = 420;
+      modalHeight = 410;
     });
   }
 
@@ -121,10 +124,13 @@ class _AuthenticationPageState
                     ),
                   ),
                 ),
-                if (isLoginLoading)
-                  const Align(
-                      alignment: Alignment.center,
-                      child: CircularLoading()),
+                if (isLoginLoading || isRegisterLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 110),
+                    child: Align(
+                        alignment: Alignment.topCenter,
+                        child: CircularLoading()),
+                  ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -143,6 +149,10 @@ class _AuthenticationPageState
                                 _loginIdController,
                             loginPasswordController:
                                 _loginPasswordController,
+                            loginPhonenumberController:
+                                _loginPhonenumberController,
+                            loginOtpController:
+                                _loginOtpController,
                             openRegisterModal:
                                 openRegisterModal,
                             isLoginLoading: isLoginLoading,

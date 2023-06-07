@@ -88,7 +88,9 @@ class FinancialInstrumentCard extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(
                         9, 4, 1, 1),
                     child: Text(
-                      '${priceChangeSign}${priceChange.toStringAsFixed(2)}',
+                      priceChangeSign == '+'
+                          ? '$priceChangeSign${priceChange.toStringAsFixed(2)}'
+                          : '${priceChange.toStringAsFixed(2)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

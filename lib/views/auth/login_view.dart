@@ -1,6 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:s8_finapp/auth/auth.dart';
 import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
@@ -9,12 +6,16 @@ class LoginModal extends StatefulWidget {
   final TextEditingController loginIdController;
   final TextEditingController loginPasswordController;
   final VoidCallback openRegisterModal;
+  final Function(bool, dynamic) updateIsLoginLoading;
+  bool isLoginLoading;
 
-  const LoginModal({
+  LoginModal({
     Key? key,
     required this.loginIdController,
     required this.loginPasswordController,
     required this.openRegisterModal,
+    required this.isLoginLoading,
+    required this.updateIsLoginLoading,
   }) : super(key: key);
 
   @override
@@ -22,17 +23,32 @@ class LoginModal extends StatefulWidget {
 }
 
 class _LoginModalState extends State<LoginModal> {
-  String? errorMessage = '';
+  String errorMessage =
+      ''; // Declare the errorMessage variable here
 
   Future<void> signInWithEmailAndPassword() async {
+    // Login process start --> loading starts
+
+    widget.updateIsLoginLoading(true, errorMessage);
+
     try {
       await Auth().signInWithEmailAndPassword(
-          email: widget.loginIdController.text,
-          password: widget.loginPasswordController.text);
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
+        email: widget.loginIdController.text,
+        password: widget.loginPasswordController.text,
+      );
+      widget.loginIdController.clear();
+      widget.loginPasswordController.clear();
+    } catch (e) {
+      // Extract the error message from the exception string
+      final regex = RegExp(r'\]\s(.*)$');
+      final match = regex.firstMatch(e.toString());
+      if (match != null) {
+        errorMessage = match.group(1) ??
+            ''; // Assign the value to the class-level errorMessage
+      }
+      widget.updateIsLoginLoading(true, errorMessage);
+    } finally {
+      widget.updateIsLoginLoading(false, errorMessage);
     }
   }
 
@@ -102,6 +118,18 @@ class _LoginModalState extends State<LoginModal> {
                           ),
                         ],
                       ),
+                      // Row(
+                      //   children: [
+                      //     Text(
+                      //       errorMessage,
+                      //       style: const TextStyle(
+                      //         color: Colors.red,
+                      //         fontSize: 14,
+                      //         fontWeight: FontWeight.normal,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -167,7 +195,6 @@ class _LoginModalState extends State<LoginModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

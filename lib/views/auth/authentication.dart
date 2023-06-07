@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:s8_finapp/auth/auth.dart';
+import 'package:s8_finapp/views/widgets/circular_loading_widget.dart';
+import 'package:s8_finapp/views/widgets/dialog/popup_dialog.dart';
 import './login_view.dart';
 import '../homepage/homepage.dart';
 import 'package:s8_finapp/views/auth/register_view.dart';
@@ -24,6 +27,35 @@ class _AuthenticationPageState
 
   bool isLogin = true;
   double modalHeight = 420;
+  dynamic errorMessage;
+
+  // Loader till the user successfully logs in
+  bool isLoginLoading = false;
+  void updateIsLoginLoading(
+      bool newValue, dynamic errorMessage) {
+    setState(() {
+      isLoginLoading = newValue;
+      this.errorMessage = errorMessage;
+      // There is room for improvment in this part of the code
+      if (errorMessage != '' && isLoginLoading == false) {
+        _dialogBuilder(context, errorMessage);
+      }
+    });
+  }
+
+  bool isRegisterLoading = false;
+  void updateIsRegisterLoading(
+      bool newValue, dynamic errorMessage) {
+    setState(() {
+      isRegisterLoading = newValue;
+      this.errorMessage = errorMessage;
+      // There is room for improvment in this part of the code
+      if (errorMessage != '' &&
+          isRegisterLoading == false) {
+        _dialogBuilder(context, errorMessage);
+      }
+    });
+  }
 
   void openRegisterModal() {
     setState(() {
@@ -37,6 +69,12 @@ class _AuthenticationPageState
       isLogin = true;
       modalHeight = 420;
     });
+  }
+
+  Future<void> _dialogBuilder(
+      BuildContext context, String errorMessage) {
+    return DialogBuilder.showCupertinoAlertDialog(
+        context, errorMessage);
   }
 
   @override
@@ -83,6 +121,10 @@ class _AuthenticationPageState
                     ),
                   ),
                 ),
+                if (isLoginLoading)
+                  const Align(
+                      alignment: Alignment.center,
+                      child: CircularLoading()),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -103,6 +145,9 @@ class _AuthenticationPageState
                                 _loginPasswordController,
                             openRegisterModal:
                                 openRegisterModal,
+                            isLoginLoading: isLoginLoading,
+                            updateIsLoginLoading:
+                                updateIsLoginLoading,
                           )
                         : RegisterModal(
                             usernameController:
@@ -112,6 +157,10 @@ class _AuthenticationPageState
                             phoneNumberController:
                                 _phoneNumberController,
                             openLoginModal: openLoginModal,
+                            isRegisterLoading:
+                                isRegisterLoading,
+                            updateIsRegisterLoading:
+                                updateIsRegisterLoading,
                           ),
                   ),
                 ),

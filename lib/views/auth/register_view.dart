@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:s8_finapp/auth/auth.dart';
-
 import 'package:s8_finapp/views/widgets/buttons/expanded_button.dart';
 
 class RegisterModal extends StatefulWidget {
@@ -9,13 +8,17 @@ class RegisterModal extends StatefulWidget {
   final TextEditingController phoneNumberController;
   final TextEditingController passwordController;
   final VoidCallback openLoginModal;
+  final Function(bool, dynamic) updateIsRegisterLoading;
+  bool isRegisterLoading;
 
-  const RegisterModal(
+  RegisterModal(
       {Key? key,
       required this.usernameController,
       required this.phoneNumberController,
       required this.passwordController,
-      required this.openLoginModal})
+      required this.openLoginModal,
+      required this.isRegisterLoading,
+      required this.updateIsRegisterLoading})
       : super(key: key);
 
   @override
@@ -27,15 +30,25 @@ class _RegisterModalState extends State<RegisterModal> {
   String? errorMessage = '';
 
   Future<void> createUserWithEmailAndPassword() async {
+    widget.updateIsRegisterLoading(true, errorMessage);
     try {
       await Auth().createUserWithEmailAndPassword(
         email: widget.usernameController.text,
         password: widget.passwordController.text,
       );
+
+      widget.usernameController.clear();
+      widget.passwordController.clear();
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
+      final regex = RegExp(r'\]\s(.*)$');
+      final match = regex.firstMatch(e.toString());
+      if (match != null) {
+        errorMessage = match.group(1) ??
+            ''; // Assign the value to the class-level errorMessage
+      }
+      widget.updateIsRegisterLoading(true, errorMessage);
+    } finally {
+      widget.updateIsRegisterLoading(false, errorMessage);
     }
   }
 

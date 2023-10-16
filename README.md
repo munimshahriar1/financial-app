@@ -1,17 +1,7 @@
-# s8_finapp
+# Pulse 9 Financial App
 
-A new Flutter project.
+This is a financial app developed in Flutter that allows user to search for financial instrument and add to their wishlist creating a mini portfolio. 
 
-## Getting Started
+# Snapshots
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# pulse-9-app
